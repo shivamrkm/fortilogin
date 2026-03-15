@@ -1,0 +1,15 @@
+[Unit]
+Description=Forti auto-login daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__FORTILOGIN_USER__
+Group=__FORTILOGIN_USER__
+ExecStart=/usr/bin/fortilogin daemon
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
