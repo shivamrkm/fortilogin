@@ -17,6 +17,34 @@ It also gives you explicit commands for:
 
 It does not open a browser. It does not keep launching tabs. It is designed to sit quietly in the background.
 
+## Quick Start
+
+If you want the shortest working install path, use one of these.
+
+Linux:
+
+```bash
+git clone <your-repo-url>
+cd fortilogin
+go build -o fortilogin ./cmd/fortilogin
+sudo install -m 0755 fortilogin /usr/bin/fortilogin
+fortilogin update
+fortilogin daemon
+```
+
+Windows:
+
+```powershell
+git clone <your-repo-url>
+cd fortilogin
+go build -o fortilogin.exe .\cmd\fortilogin
+New-Item -ItemType Directory -Force C:\Tools\FortiLogin | Out-Null
+Copy-Item .\fortilogin.exe C:\Tools\FortiLogin\fortilogin.exe
+cd C:\Tools\FortiLogin
+.\fortilogin.exe update
+.\fortilogin.exe daemon
+```
+
 ## What It Does
 
 FortiLogin can be used in two ways:
@@ -96,7 +124,7 @@ That creates a local binary named `fortilogin` in the repo folder.
 ### Linux: Install The Binary
 
 ```bash
-sudo install -m 0755 fortilogin /usr/local/bin/fortilogin
+sudo install -m 0755 fortilogin /usr/bin/fortilogin
 ```
 
 Verify installation:
@@ -156,9 +184,17 @@ If you want FortiLogin to start automatically on boot, use the included systemd 
 packaging/systemd/fortilogin.service
 ```
 
-Replace `__FORTILOGIN_USER__` with your Linux username, then install the unit:
+Replace `__FORTILOGIN_USER__` with your actual Linux username.
+
+Examples:
+
+- on a laptop user account, that might be `shivamrkm`
+- on a server, that might be `hpc`
+
+Run the following commands one by one:
 
 ```bash
+sudo systemctl unmask fortilogin.service 2>/dev/null || true
 sed 's/__FORTILOGIN_USER__/yourusername/g' packaging/systemd/fortilogin.service | sudo tee /etc/systemd/system/fortilogin.service >/dev/null
 sudo systemctl daemon-reload
 sudo systemctl enable --now fortilogin.service
@@ -192,7 +228,7 @@ If someone just wants the full Linux flow in order:
 git clone <your-repo-url>
 cd fortilogin
 go build -o fortilogin ./cmd/fortilogin
-sudo install -m 0755 fortilogin /usr/local/bin/fortilogin
+sudo install -m 0755 fortilogin /usr/bin/fortilogin
 fortilogin update
 fortilogin status
 fortilogin daemon
@@ -201,10 +237,21 @@ fortilogin daemon
 If they want background startup on boot too:
 
 ```bash
+sudo systemctl unmask fortilogin.service 2>/dev/null || true
 sed 's/__FORTILOGIN_USER__/yourusername/g' packaging/systemd/fortilogin.service | sudo tee /etc/systemd/system/fortilogin.service >/dev/null
 sudo systemctl daemon-reload
 sudo systemctl enable --now fortilogin.service
 sudo systemctl status fortilogin.service
+```
+
+Example for a machine where the login user is `hpc`:
+
+```bash
+sudo systemctl unmask fortilogin.service 2>/dev/null || true
+sed 's/__FORTILOGIN_USER__/hpc/g' packaging/systemd/fortilogin.service | sudo tee /etc/systemd/system/fortilogin.service >/dev/null
+sudo systemctl daemon-reload
+sudo systemctl enable --now fortilogin.service
+sudo systemctl status fortilogin.service --no-pager
 ```
 
 ## Windows Setup
@@ -425,6 +472,101 @@ The `.deb` installs:
 - `/usr/share/fortilogin/fortilogin.service.example`
 
 It does not auto-install a systemd service because the username in the service file must be customized first.
+
+## Troubleshooting
+
+### Linux: `fortilogin.service is masked`
+
+Run:
+
+```bash
+sudo systemctl unmask fortilogin.service
+sudo systemctl daemon-reload
+```
+
+Then install the unit again and enable it.
+
+### Linux: `status=217/USER`
+
+This usually means the `User=` or `Group=` in the service file is wrong.
+
+Check the installed unit:
+
+```bash
+sudo systemctl cat fortilogin.service
+```
+
+Make sure it contains the correct Linux username, then reinstall the unit with the right replacement value and run:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart fortilogin.service
+```
+
+### Linux: Service starts but does nothing
+
+Check logs:
+
+```bash
+sudo journalctl -u fortilogin.service -f
+```
+
+Check the CLI directly:
+
+```bash
+fortilogin status
+fortilogin login
+```
+
+### Linux: Binary not found by systemd
+
+If you followed the README build/install path, the binary should be here:
+
+```text
+/usr/local/bin/fortilogin
+```
+
+Verify it:
+
+```bash
+ls -l /usr/local/bin/fortilogin
+```
+
+### Windows: Startup helper ran but FortiLogin does not start on sign-in
+
+Check that the shortcut exists in:
+
+```text
+%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
+```
+
+Also make sure the binary still exists at the exact path you gave to `install-startup.ps1`.
+
+## Default Behavior
+
+FortiLogin behaves like this by default:
+
+- `fortilogin daemon` checks connectivity every 30 seconds
+- if internet is already working, it does nothing
+- if the firewall is blocking internet, it attempts login
+- it does not open a browser
+- `fortilogin logout` uses the fixed logout token behavior currently built into the tool
+- after 2 failed credential attempts, the daemon stops retrying and keeps warning until `fortilogin update` is run
+
+## Recommended Linux Install Flow
+
+If you are installing on Linux for actual daily use, this is the recommended order:
+
+1. Clone the repo.
+2. Build the binary.
+3. Install it to `/usr/bin/fortilogin`.
+4. Run `fortilogin update`.
+5. Run `fortilogin status`.
+6. Test `fortilogin login`.
+7. Install the `systemd` unit.
+8. Enable and start the service.
+
+That order avoids most setup mistakes.
 
 ## Notes
 
