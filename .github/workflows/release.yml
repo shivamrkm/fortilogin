@@ -24,6 +24,7 @@ jobs:
         run: |
           mkdir -p dist
           go build -o dist/fortilogin-linux-amd64 ./cmd/fortilogin
+          GOOS=windows GOARCH=amd64 go build -o dist/fortilogin-windows-amd64.exe ./cmd/fortilogin
 
       - name: Build deb
         run: |
@@ -37,4 +38,5 @@ jobs:
         with:
           files: |
             dist/fortilogin-linux-amd64
+            dist/fortilogin-windows-amd64.exe
             dist/deb/*.deb
