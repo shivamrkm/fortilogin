@@ -106,13 +106,6 @@ git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 ```
 
-Example:
-
-```bash
-git clone git@github.com:yourname/fortilogin.git
-cd fortilogin
-```
-
 ### Linux: Build The Binary
 
 ```bash
