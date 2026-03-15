@@ -24,7 +24,7 @@ If you want the shortest working install path, use one of these.
 Linux:
 
 ```bash
-git clone https://github.com/shivamrkm/fortilogin-repo-url>
+git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 go build -o fortilogin ./cmd/fortilogin
 sudo install -m 0755 fortilogin /usr/bin/fortilogin
@@ -35,7 +35,7 @@ fortilogin daemon
 Windows:
 
 ```powershell
-git clone https://github.com/shivamrkm/fortilogin-repo-url>
+git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 go build -o fortilogin.exe .\cmd\fortilogin
 New-Item -ItemType Directory -Force C:\Tools\FortiLogin | Out-Null
@@ -102,7 +102,7 @@ This section is written for someone starting from scratch on Linux.
 ### Linux: Clone The Repository
 
 ```bash
-git clone https://github.com/shivamrkm/fortilogin-repo-url>
+git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 ```
 
@@ -225,7 +225,7 @@ sudo systemctl start fortilogin.service
 If someone just wants the full Linux flow in order:
 
 ```bash
-git clone https://github.com/shivamrkm/fortilogin-repo-url>
+git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 go build -o fortilogin ./cmd/fortilogin
 sudo install -m 0755 fortilogin /usr/bin/fortilogin
@@ -279,7 +279,7 @@ The intended Windows setup is:
 Open PowerShell and run:
 
 ```powershell
-git clone https://github.com/shivamrkm/fortilogin-repo-url>
+git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 ```
 
@@ -388,7 +388,7 @@ Startup folder location:
 If someone wants the full Windows flow in order:
 
 ```powershell
-git clone https://github.com/shivamrkm/fortilogin-repo-url>
+git clone https://github.com/shivamrkm/fortilogin
 cd fortilogin
 go build -o fortilogin.exe .\cmd\fortilogin
 New-Item -ItemType Directory -Force C:\Tools\FortiLogin | Out-Null
